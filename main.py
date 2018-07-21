@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'FirstWindow.ui'
-#
-# Created by: PyQt4 UI code generator 4.12.1
-#
-# WARNING! All changes made in this file will be lost!
-
 from PyQt4 import QtCore, QtGui
 from pytube import *
 from pydub import AudioSegment
@@ -24,6 +18,31 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
+
+def showsuccess():
+    msg = QtGui.QMessageBox()
+    msg.setIcon(QtGui.QMessageBox.Information)
+    msg.setText("File Downloaded!")
+    msg.exec_()
+
+def dir_failure():
+    msg = QtGui.QMessageBox()
+    msg.setIcon(QtGui.QMessageBox.Information)
+    msg.setText("Invalid directory path")
+    msg.exec_()
+
+def no_audio():
+    msg = QtGui.QMessageBox()
+    msg.setIcon(QtGui.QMessageBox.Information)
+    msg.setText("No audio-only avaible in this video")
+    msg.exec_()
+
+def showfailed():
+    msg = QtGui.QMessageBox()
+    msg.setIcon(QtGui.QMessageBox.Information)
+    msg.setText("URL is not valid, file could not be downloaded")
+    msg.exec_()
+
 class Ui_Form(QtGui.QWidget):
     def __init__(self):
         QtGui.QWidget.__init__(self)
@@ -32,28 +51,28 @@ class Ui_Form(QtGui.QWidget):
 
     def setupUi(self, Form):
         Form.setObjectName(_fromUtf8("Youtube Scraper"))
-        Form.resize(400, 300)
+        Form.resize(450, 230)
         icon = QtGui.QIcon.fromTheme(_fromUtf8("cleanlooks"))
         Form.setWindowIcon(icon)
         self.pushButton = QtGui.QPushButton(Form)
-        self.pushButton.setGeometry(QtCore.QRect(150, 190, 89, 25))
+        self.pushButton.setGeometry(QtCore.QRect(150, 190, 100, 35))
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
+        self.pushButton.setIcon(QtGui.QIcon("download.png"))
 
-        #testing shit
         self.pushButton_2 = QtGui.QPushButton(Form)
-        self.pushButton_2.setGeometry(QtCore.QRect(10, 100, 100, 25))
+        self.pushButton_2.setGeometry(QtCore.QRect(5, 100, 100, 25))
         self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
+        self.pushButton_2.setIcon(QtGui.QIcon("dir_icon.ico"))
 
         self.lineEdit_2 = QtGui.QLineEdit(Form)
-        self.lineEdit_2.setGeometry(QtCore.QRect(110, 100, 271, 25))
+        self.lineEdit_2.setGeometry(QtCore.QRect(110, 100, 335, 25))
         self.lineEdit_2.setInputMask(_fromUtf8(""))
         self.lineEdit_2.setObjectName(_fromUtf8("lineEdit_2"))
 
         self.locationText = QtGui.QTextEdit()
-        #testing shit
 
         self.lineEdit = QtGui.QLineEdit(Form)
-        self.lineEdit.setGeometry(QtCore.QRect(10, 160, 271, 25))
+        self.lineEdit.setGeometry(QtCore.QRect(10, 160, 435, 25))
         self.lineEdit.setInputMask(_fromUtf8(""))
         self.lineEdit.setObjectName(_fromUtf8("lineEdit"))
         self.radioButton = QtGui.QRadioButton(Form)
@@ -64,12 +83,9 @@ class Ui_Form(QtGui.QWidget):
         self.radioButton_2.setGeometry(QtCore.QRect(90, 130, 61, 23))
         self.radioButton_2.setObjectName(_fromUtf8("radioButton_2"))
         self.textBrowser = QtGui.QTextBrowser(Form)
-        self.textBrowser.setGeometry(QtCore.QRect(60, 20, 256, 71))
+        self.textBrowser.setGeometry(QtCore.QRect(80, 20, 300, 70))
         self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
-        self.progressBar = QtGui.QProgressBar(Form)
-        self.progressBar.setGeometry(QtCore.QRect(10, 220, 381, 23))
-        self.progressBar.setProperty("value", 24)
-        self.progressBar.setObjectName(_fromUtf8("progressBar"))
+
 
 
         self.retranslateUi(Form)
@@ -91,20 +107,35 @@ class Ui_Form(QtGui.QWidget):
          f = dirName[0]
          self.lineEdit_2.setText(f)
 
-
     def download_script(self):
         url = self.lineEdit.text()
-        file = YouTube(url)
+        try:
+            file = YouTube(url)
+        except:
+            showfailed()
+            raise ValueError
+
         directory = self.lineEdit_2.text()
+
         if self.radioButton.isChecked():
-            file.streams.first().download(directory)
+            try:
+                file.streams.first().download(directory)
+            except FileNotFoundError:
+                dir_failure()
+                raise FileNotFoundError
 
         elif self.radioButton_2.isChecked():
             audio = file.streams.filter(only_audio=True).first()
-            audio.download(directory)
-            mp3 = directory + "/" + audio.default_filename
-            sound = AudioSegment.from_file(mp3)
-            sound.export(directory + "/" + file.title)
+            try:
+                audio.download(directory)
+            except FileNotFoundError:
+                dir_failure()
+                raise FileNotFoundError
+            except AttributeError:
+                no_audio()
+                raise AttributeError
+
+        showsuccess()
 
 
     def retranslateUi(self, Form):
@@ -112,7 +143,7 @@ class Ui_Form(QtGui.QWidget):
         Form.setWindowIcon(QtGui.QIcon("icon.png"))
         self.pushButton.setText(_translate("Form", "Download", None))
         # edit
-        self.pushButton_2.setText(_translate("Form", "File Directory", None))
+        self.pushButton_2.setText(_translate("Form", "Directory", None))
         self.lineEdit_2.setPlaceholderText(_translate("Form", "Dir Location", None))
         # edit
         self.lineEdit.setPlaceholderText(_translate("Form", "url", None))
@@ -124,7 +155,6 @@ class Ui_Form(QtGui.QWidget):
 "</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Choose file type then hit download.</p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">The best avaible resolution will be downloaded.</p></body></html>", None))
-
 
 if __name__ == "__main__":
     import sys
