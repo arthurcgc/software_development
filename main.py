@@ -2,7 +2,6 @@
 
 from PyQt4 import QtCore, QtGui
 from pytube import *
-from pydub import AudioSegment
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
