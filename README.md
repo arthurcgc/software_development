@@ -1,6 +1,3 @@
-1- Open designer
-2- Edit Widget
-3- pyuic5 <name>.ui -o <name>.py -x
-4- chmod +x <name>.py
-5- python3 <name>.py
+Simple GUI project that I made using QtDesigner to generate the UI, then translated the program using PyQt4 and implemented the scraping funcions utilizing the pytube module.
 
+The program runs on Linux and is not implemented on another OS yet, you need to have some version of QT installed for it to run. 
